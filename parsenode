@@ -1,0 +1,57 @@
+#!/usr/bin/julia
+
+function array_scanner(fn::String, T::Type, header::Bool=false)# TODO: codes for header=true
+    f = readlines(fn)
+    n = length(f)
+    m = length(split(f[2]))
+    out = Matrix{T}(undef, n, m)
+    for i in 1:n
+        a = split(f[i], " ")
+        for j in 1:m
+            out[i,j] = parse(T, a[j])
+        end
+    end
+    if m == 1
+        return(out[:])
+    else
+        return(out)
+    end
+end
+function array_printer(matrix::Matrix, fn::String)
+    (m, n) = size(matrix)
+    open(fn, "w") do f
+        for i in 1:m
+            for j in 1:n-1
+                write(f, string(matrix[i, j]), ' ')
+            end
+            write(f, string(matrix[i, n]), '\n')
+        end
+    end
+    return(Nothing)
+end
+function array_printer(vector::Vector, fn::String)
+    n = length(vector)
+    open(fn, "w") do f
+        for i in 1:n-1
+            write(f, string(vector[i]), '\n')
+        end
+        write(f, string(vector[end]))
+    end
+    return(Nothing)
+end
+
+function jivs(f::Vector{String}, fn::String)
+    open(fn, "w") do io
+        for item in f[begin:end-1]
+            if length(split(item)) == 3
+                write(io, item, '\n')
+            end
+        end
+        write(io, f[end])
+    end
+end
+fn = ARGS[1]
+f = readlines(fn)
+l = parse(Int, split(f[1])[end])
+o = Vector{String}(undef, l)
+jivs(f[2:end], fn)

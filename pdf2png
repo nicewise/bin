@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+
+#pdf2png /home/sunhh/zoye/2
+from os import listdir, unlink, chdir
+from os.path import splitext
+from sys import argv
+from PIL import Image
+import fitz
+
+
+def pdf2png(fn):
+    doc = fitz.open(fn)
+    for pno in range(doc.pageCount):
+        page = doc[pno]
+        zoom_x = 2.0
+        zoom_y = 2.0
+        mat = fitz.Matrix(zoom_x, zoom_y)
+        pix = page.getPixmap(matrix = mat, alpha=False)
+        pix.writeImage("page%i.png" % page.number)
+
+def pinjie(outfn):
+    fn_list = []
+    im_list = []
+    for fn in listdir():
+        if fn.startswith('page') and fn.endswith('.png'):
+            fn_list.append(fn)
+    fn_list.sort()
+    for fn in fn_list:
+        im_list.append(Image.open(fn))
+    width, height = im_list[0].size
+    result = Image.new(im_list[0].mode, (width, height*len(im_list)))
+    for i in range(len(im_list)):
+        result.paste(im_list[i], box=(0, 0+i*height, width, (i+1)*height))
+    result.save(splitext(outfn)[0]+'.png')
+
+def clean():
+    for fn in listdir():
+        if fn.startswith('page') and fn.endswith('.png'):
+            unlink(fn)
+
+def main():
+    root = argv[1]
+    chdir(root)
+    fns = [f for f in listdir("./") if f.endswith('.pdf')]
+    for fn in fns:
+        pdf2png(fn)
+        pinjie(fn)
+        clean()
+
+if __name__ == '__main__':
+    main()

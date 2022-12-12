@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+#
+dmll=$(cat /sys/class/power_supply/BAT0/capacity)
+dmllstatus=$(cat /sys/class/power_supply/BAT0/status)
+if [ "${dmllstatus}" == "Charging" ]; then
+    echo "Power left:${dmll}% ${dmllstatus}"
+    exit 0
+else
+    if [ ${dmll} -le 15 ]; then
+        echo "Power left:${dmll}% HAVE YOUR COMPUTER CHARGED NOW !!!"
+    else
+        echo "Power left:${dmll}% Not Charging"
+    fi
+fi

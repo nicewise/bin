@@ -1,0 +1,31 @@
+#!/usr/bin/python3
+# pdfmerger /home/sunhh/test
+# 功能有限。。。会出莫名其妙的错误
+import os
+from os import listdir, unlink, chdir
+from sys import argv
+from PyPDF2 import PdfFileMerger
+
+def merge21(fns, outfn):
+    file_merger = PdfFileMerger()
+    for pdf in fns:
+        file_merger.append(pdf)
+    file_merger.write(outfn)
+
+def findbase(fn):
+    for i in range(6, len(fn)):
+        if fn[-i] == '-':
+            return(fn[0:len(fn)-i])
+
+def main():
+    root = argv[1]
+    chdir(root)
+    flist = [f for f in listdir("./") if f.endswith('.pdf')]
+    fnbase = findbase(flist[0])
+    fns = []
+    for i in range(len(flist)):
+        fns.append(fnbase+'-'+str(i+1)+'.pdf')
+    merge21(fns, fnbase+'.pdf')
+
+if __name__ == '__main__':
+    main()

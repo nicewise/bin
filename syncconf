@@ -1,0 +1,30 @@
+#!/bin/bash
+rootdir="$HOME/confsync"
+syncdir="$rootdir/matebook"
+test -d $syncdir || mkdir $syncdir
+
+#---从remote同步到local---#
+test $rootdir/.vimrc -nt $HOME/.vimrc && rsync -az $rootdir/.vimrc $HOME/.vimrc || echo '.vimrc is at least up to date'
+#同步vimrc
+test $rootdir/.xinitrc -nt $HOME/.xinitrc && rsync -az $rootdir/.xinitrc $HOME/.xinitrc || echo '.xinitrc is at least up to date'
+#同步xinitrc
+test $rootdir/.xserverrc -nt $HOME/.xserverrc && rsync -az $rootdir/.xserverrc $HOME/.xserverrc || echo '.xserverrc is at least up to date'
+#同步xserverrc
+test $rootdir/.xprofile -nt $HOME/.xprofile && rsync -az $rootdir/.xprofile $HOME/.xprofile || echo '.xprofile is at least up to date'
+#同步xprofile
+if [ ! -d $HOME/.vim/UltiSnips ]; then
+	mkdir -p $HOME/.vim/UltiSnips
+fi
+snipslist=$(ls $rootdir/UltiSnips)
+for snips in ${snipslist}
+do
+	test $rootdir/UltiSnips/${snips} -nt $HOME/.vim/UltiSnips/${snips} && rsync -avz $rootdir/UltiSnips/${snips} $HOME/.vim/UltiSnips || echo ".vim/UltiSnips/${snips} is at least up to date"
+done
+#同步snippets
+rsync -az $rootdir/.goldendict/ $HOME/.goldendict
+#同步goldendict
+echo "sync from remote complete!"
+#---从local同步到remote---#
+rsync -az --delete $HOME/.conkyrc $HOME/.bash_profile $HOME/.bashrc $HOME/.Xresources $HOME/.config/i3 $HOME/bin $syncdir #这些只能在local修改
+rsync -az --delete $HOME/.vimrc $HOME/.vim/UltiSnips $HOME/.xinitrc $HOME/.xserverrc $HOME/.xprofile $HOME/.goldendict $rootdir
+echo "sync to remote complete!"
