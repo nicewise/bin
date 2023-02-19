@@ -41,5 +41,5 @@ function array_printer(vector::Vector, fn::String)
 end
 fn = ARGS[1]
 o = array_scanner(fn, Int)
-o = unique(o)
+o = sort(unique(o))
 array_printer(o, fn)
