@@ -1,1 +1,0 @@
-/home/sunhh/matlab.d/bin/matlab
